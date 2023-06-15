@@ -2,7 +2,7 @@ terraform {
   cloud {
     organization = "gozain-lab"
     workspaces {
-      name = "aws_vpc_own"
+      name = "estar_test"
     }
   }
 

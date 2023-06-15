@@ -15,9 +15,11 @@ Before running this code on Terraform Cloud, please ensure that you have complet
 
 To get started with this project, follow these steps:
 
-1. Clone this repository to your local machine or your preferred version control system.
+1. Clone this repository to your your preferred version control system.
 
-2. Edit the `provider.tf` file to reflect your Terraform Cloud instance and workspace. Update the `organization` and workspace `name` values to match your Terraform Cloud configuration. For example:
+2. Create a new workspace in Terrafrom Cloud using the Version Control Workflow. 
+
+3. Edit the `provider.tf` file to reflect your Terraform Cloud instance and workspace. Update the `organization` and workspace `name` values to match your Terraform Cloud configuration. For example:
 
    ```hcl
    terraform {
@@ -29,7 +31,8 @@ To get started with this project, follow these steps:
      }
    }
 
-3. Configure the TF Cloud Workspace to have access to your AWS tenant. Ensure that the necessary AWS credentials and access permissions are set up in your Terraform Cloud workspace. Ideally you would have configured TF Cloud as OIDC in your AWS tenant. (see https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/aws-configuration)
+4. Configure the TF Cloud Workspace to have access to your AWS tenant. Ensure that the necessary AWS credentials and access permissions are set up in your Terraform Cloud workspace. Ideally you would have configured TF Cloud as OIDC in your AWS tenant. (see https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/aws-configuration)
+
 
 ## Applying the code
 
@@ -37,5 +40,5 @@ The variables should be passed as a separate file. Included in this project you 
 
 As the code is to be run on TF Cloud, you should configure these variables using the method of your choice on your TF Cloud workspace. For sake of this test, I have formated the file as auto.tfvars so that TF Cloud can automatically pick the variables out without any further configurations of variables.
 
-Note that this is not best practics. When running code from TF Cloud variables should be kept separate from code and appplied using TF Clouds workspace variables/sensitive variables. 
+Note that best practice when running code from TF Cloud is that variables are to be kept separate from code and appplied using TF Clouds workspace variables/sensitive variables. 
 

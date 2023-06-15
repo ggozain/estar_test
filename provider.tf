@@ -1,8 +1,8 @@
 terraform {
   cloud {
-    organization = "gozain-lab"
+    organization = "your-tf-cloud-organization"
     workspaces {
-      name = "estar_test"
+      name = "your-workspace"
     }
   }
 

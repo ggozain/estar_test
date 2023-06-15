@@ -1,7 +1,6 @@
 variable "aws_region" {
     type = string
-    description = "The desired AWS region to work in"
-    default = "eu-west-2"
+    description = "AWS Region"
 }
 
 variable "vpc_cidr" {

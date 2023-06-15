@@ -1,11 +1,14 @@
 
 module "vpc" {
-  source                           = "./modules/vpc"
-  vpc_cidr                         = "10.0.0.0/16"
+  source = "./modules/vpc"
+
+  for_each = var.vpcs
+
   aws_region                       = var.aws_region
-  enable_dns_support               = true
-  enable_dns_hostnames             = true
-  assign_generated_ipv6_cidr_block = false
+  vpc_cidr                         = each.value["cidr"]
+  enable_dns_support               = each.value["dns_support"]
+  enable_dns_hostnames             = each.value["dns_hostnames"]
+  assign_generated_ipv6_cidr_block = each.value["assign_generated_ipv6_cidr_block"]
 }
 
 

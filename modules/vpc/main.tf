@@ -1,5 +1,4 @@
  locals {
-  region = var.aws_region  # Specify the AWS region here
   availability_zones = data.aws_availability_zones.available.names
   public_subnet_numbers = { for az in local.availability_zones : az => index(local.availability_zones, az) + 1 }
   private_subnet_numbers = { for az in local.availability_zones : az => index(local.availability_zones, az) + length(local.availability_zones) + 1 }
@@ -14,15 +13,11 @@
   }
 }
 
-provider "aws" {
-  region = var.aws_region
-}
-
 data "aws_availability_zones" "available" {
   state = "available"
   filter {
     name = "region-name"
-    values = [local.region]
+    values = [var.aws_region]
   }
 }
  
@@ -34,9 +29,9 @@ data "aws_availability_zones" "available" {
   enable_dns_hostnames             = var.enable_dns_hostnames 
   assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
   
-#   tags = {
-#     Name = "gozain-lab-${var.infra_env}-vpc"
-#   }
+  # tags = {
+  #   Name = "${var.infra_env}-vpc"
+  # }
 }
 
 #Create Public Subnets

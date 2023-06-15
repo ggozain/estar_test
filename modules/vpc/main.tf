@@ -1,9 +1,21 @@
  locals {
   region = var.aws_region  # Specify the AWS region here
-
   availability_zones = data.aws_availability_zones.available.names
   public_subnet_numbers = { for az in local.availability_zones : az => index(local.availability_zones, az) + 1 }
   private_subnet_numbers = { for az in local.availability_zones : az => index(local.availability_zones, az) + length(local.availability_zones) + 1 }
+  eip_ids = aws_eip.elastic_ip[*].id
+  public_subnet_ids = {
+    for idx, subnet in aws_subnet.public:
+    idx => subnet.id
+  }
+  private_subnet_ids = {
+    for idx, subnet in aws_subnet.private:
+    idx => subnet.id
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
 }
 
 data "aws_availability_zones" "available" {
@@ -18,13 +30,12 @@ data "aws_availability_zones" "available" {
  resource "aws_vpc" "vpc" {
   cidr_block                       = var.vpc_cidr
   instance_tenancy                 = "default"
-  enable_dns_support               = true
-  enable_dns_hostnames             = true
-  assign_generated_ipv6_cidr_block = false
+  enable_dns_support               = var.enable_dns_support
+  enable_dns_hostnames             = var.enable_dns_hostnames 
+  assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
   
 #   tags = {
 #     Name = "gozain-lab-${var.infra_env}-vpc"
-#     Environment = var.infra_env
 #   }
 }
 
@@ -83,9 +94,9 @@ resource "aws_eip" "elastic_ip" {
 #Create NatGW per ElasticIPs assigning one to each public subnet
 resource "aws_nat_gateway" "nat_gw" {
 
-    count = length(aws_eip.elastic_ip[*].id)
-    allocation_id = aws_eip.elastic_ip[*].id[count.index]
-    subnet_id     = values(aws_subnet.public[*].id[count.index])
+    count = length(local.eip_ids)
+    allocation_id = local.eip_ids[count.index]
+    subnet_id     = values(local.public_subnet_ids)[count.index]
 
 #   tags = {
 #     Name = "gozain-lab-${var.infra_env}-private-natgw-${var.vpc_public_subnet_ids[count.index]}"
@@ -110,13 +121,13 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table" "private" {
-    count = length(aws_nat_gateway.nat_gw.*.id)
+    count = length(aws_nat_gateway.nat_gw[*].id)
 
     vpc_id = aws_vpc.vpc.id
     
     route {
         cidr_block = "0.0.0.0/0"
-        gateway_id = aws_nat_gateway.nat_gw.*.id[count.index]
+        gateway_id = (aws_nat_gateway.nat_gw[*].id)[count.index]
     }
     # tags = {
     #     Name = "gozain-lab-${var.infra_env}-private-routing-table-${var.nat_gw_ids[count.index]}"
@@ -124,4 +135,16 @@ resource "aws_route_table" "private" {
     #     Environment = var.infra_env
     # }
   
+}
+
+resource "aws_route_table_association" "public" {
+    for_each = local.public_subnet_ids
+    subnet_id = each.value
+    route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "private" {
+    count = length(aws_route_table.private[*].id)
+    subnet_id = values(local.private_subnet_ids)[count.index]
+    route_table_id = (aws_route_table.private[*].id)[count.index]
 }

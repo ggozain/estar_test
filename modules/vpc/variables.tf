@@ -9,4 +9,22 @@ variable "vpc_cidr" {
     description = "The CIDR for the VPC"
 }
 
+variable "enable_dns_support" {
+    type = bool
+    description = "Enables or disable DNS support"
+    default = false
+}
+
+variable "enable_dns_hostnames" {
+    type = bool
+    description = "Enables or disable DNS hostnames"
+    default = false
+}
+
+variable "assign_generated_ipv6_cidr_block" {
+    type = bool
+    description = "Enables or disable module to assign generated ipv6 cidr block"
+    default = false
+}
+
 

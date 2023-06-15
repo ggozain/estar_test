@@ -26,4 +26,9 @@ variable "assign_generated_ipv6_cidr_block" {
     default = false
 }
 
+variable "infra_env" {
+    type = string
+    description = "Used for naming the infrasctructure for tagging"
+}
+
 

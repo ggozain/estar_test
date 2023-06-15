@@ -9,6 +9,7 @@ module "vpc" {
   enable_dns_support               = each.value["dns_support"]
   enable_dns_hostnames             = each.value["dns_hostnames"]
   assign_generated_ipv6_cidr_block = each.value["assign_generated_ipv6_cidr_block"]
+  infra_env                        = each.value["infra_env"]
 }
 
 

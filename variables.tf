@@ -11,6 +11,7 @@ variable "vpcs" {
     dns_support                      = bool
     dns_hostnames                    = bool
     assign_generated_ipv6_cidr_block = bool
+    infra_env                        = string
 
   }))
 

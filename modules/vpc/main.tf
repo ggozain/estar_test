@@ -29,9 +29,9 @@ data "aws_availability_zones" "available" {
   enable_dns_hostnames             = var.enable_dns_hostnames 
   assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
   
-  # tags = {
-  #   Name = "${var.infra_env}-vpc"
-  # }
+  tags = {
+    Name = "${var.infra_env}-vpc"
+  }
 }
 
 #Create Public Subnets
@@ -42,13 +42,9 @@ resource "aws_subnet" "public" {
     availability_zone = each.key
     cidr_block = cidrsubnet(aws_vpc.vpc.cidr_block, 8, each.value)
 
-    # tags = {
-    #     Name        = "gozain-lab-${var.infra_env}-public-subnet-${each.key}"
-    #     Project     = var.tag_project_name
-    #     Role        = "public"
-    #     Environment = var.infra_env
-    #     Subnet      = "${each.key}-${each.value}"
-    # }
+    tags = {
+    Name = "${var.infra_env}-Public_Subnet"
+  }
 }
 
 #Create Private Subnets
@@ -60,30 +56,26 @@ resource "aws_subnet" "private" {
 
     cidr_block = cidrsubnet(aws_vpc.vpc.cidr_block, 5, each.value)
 
-    # tags = {
-    #     Name        = "gozain-lab-${var.infra_env}-private-subnet-${each.key}"
-    #     Project     = var.tag_project_name
-    #     Role        = "private"
-    #     Environment = var.infra_env
-    #     Subnet      = "${each.key}-${each.value}"
-    # }
+    tags = {
+    Name = "${var.infra_env}-Private_Subnet"
+  }
 }
 
 #Create Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.vpc.id
-#   tags = {
-#     Name        = "gozain-lab-${var.infra_env}-igw"
-#     Project     = var.tag_project_name
-#     Role        = "public"
-#     Environment = var.infra_env
-#   }
+  tags = {
+    Name = "${var.infra_env}-Internet_Gateway"
+  }
 }
 
 #Create Elastic IPs
 resource "aws_eip" "elastic_ip" {
     depends_on = [aws_internet_gateway.main]
     count = length(local.public_subnet_numbers)
+    tags = {
+    Name = "${var.infra_env}-Internet_gateway"
+  }
 }
 
 #Create NatGW per ElasticIPs assigning one to each public subnet
@@ -93,12 +85,11 @@ resource "aws_nat_gateway" "nat_gw" {
     allocation_id = local.eip_ids[count.index]
     subnet_id     = values(local.public_subnet_ids)[count.index]
 
-#   tags = {
-#     Name = "gozain-lab-${var.infra_env}-private-natgw-${var.vpc_public_subnet_ids[count.index]}"
-#     Project     = var.tag_project_name
-#     Environment = var.infra_env
-#   }
+  tags = {
+    Name = "${var.infra_env}-private-natgw-${values(local.public_subnet_ids)[count.index]}"
+  }
 }
+
 
 resource "aws_route_table" "public" {
 
@@ -107,11 +98,9 @@ resource "aws_route_table" "public" {
         cidr_block = "0.0.0.0/0"
         gateway_id = aws_internet_gateway.main.id
     }
-    # tags = {
-    #     Name = "gozain-lab-${var.infra_env}-public-routing-table"
-    #     Project     = var.tag_project_name
-    #     Environment = var.infra_env
-    # }
+    tags = {
+        Name = "${var.infra_env}-public-routing-table"
+    }
   
 }
 
@@ -124,11 +113,9 @@ resource "aws_route_table" "private" {
         cidr_block = "0.0.0.0/0"
         gateway_id = (aws_nat_gateway.nat_gw[*].id)[count.index]
     }
-    # tags = {
-    #     Name = "gozain-lab-${var.infra_env}-private-routing-table-${var.nat_gw_ids[count.index]}"
-    #     Project     = var.tag_project_name
-    #     Environment = var.infra_env
-    # }
+    tags = {
+        Name = "${var.infra_env}-private-routing-table"
+    }
   
 }
 

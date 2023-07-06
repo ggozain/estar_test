@@ -1,0 +1,12 @@
+repos:
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.81.0 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+  hooks:
+    - id: terraform_fmt
+    - id: terraform_validate
+    - id: terraform_docs
+      args:
+      - --hook-config=--add-to-existing-file=true
+      - --hook-config=--create-file-if-not-exist=true
+    # - id: terraform_providers_lock
+

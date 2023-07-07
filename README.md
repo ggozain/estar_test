@@ -48,7 +48,8 @@ Note that best practice when running code from TF Cloud is that variables are to
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.3.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.4.2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | = 5.3.0 |
 
 ## Providers
 
